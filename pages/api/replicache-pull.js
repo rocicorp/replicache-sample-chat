@@ -34,7 +34,7 @@ export default async (req, res) => {
           value: {
             from: row.sender,
             content: row.content,
-            order: row.ord,
+            order: parseInt(row.ord),
           },
         })),
       });
