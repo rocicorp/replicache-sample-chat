@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Replicache} from 'replicache';
 import {useSubscribe} from 'replicache-react-util';
 import Pusher from 'pusher-js';
+import {nanoid} from 'nanoid';
 
 export default function Home() {
   const [rep, setRep] = useState(null);
@@ -45,7 +46,7 @@ function Chat({rep}) {
     const order = (last?.order ?? 0) + 1;
     rep.createMessage({
       // Easy unique ID. In a real app use a GUID.
-      id: Math.random().toString(32).substr(2),
+      id: nanoid(),
       from: usernameRef.current.value,
       content: contentRef.current.value,
       order,
@@ -53,7 +54,7 @@ function Chat({rep}) {
     usernameRef.current.value = '';
     contentRef.current.value = '';
   };
-  
+
   return (
     <div style={styles.container}>
       <form style={styles.form} onSubmit={onSubmit}>
