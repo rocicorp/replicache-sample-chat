@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Replicache} from 'replicache';
-import {useSubscribe} from 'replicache-react-util';
+import {useSubscribe} from 'replicache-react';
 import Pusher from 'pusher-js';
 import {nanoid} from 'nanoid';
 
