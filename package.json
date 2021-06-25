@@ -17,5 +17,11 @@
     "react-dom": "17.0.2",
     "replicache": "^6.2.2",
     "replicache-react": "^1.0.0"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "bracketSpacing": false
   }
 }
