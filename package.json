@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "postinstall": "mkdir -p public && cp node_modules/replicache/out/*.wasm public/"
   },
   "dependencies": {
     "nanoid": "^3.1.23",
