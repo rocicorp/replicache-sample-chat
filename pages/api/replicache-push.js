@@ -7,9 +7,9 @@ export default async (req, res) => {
 
   const t0 = Date.now();
   try {
-    await db.tx(async () => {
-      const {nextval: version} = await db.one("SELECT nextval('version')");
-      let lastMutationID = await getLastMutationID(push.clientID);
+    await db.tx(async t => {
+      const {nextval: version} = await t.one("SELECT nextval('version')");
+      let lastMutationID = await getLastMutationID(t, push.clientID);
 
       console.log('version', version, 'lastMutationID:', lastMutationID);
 
@@ -33,7 +33,7 @@ export default async (req, res) => {
 
         switch (mutation.name) {
           case 'createMessage':
-            await createMessage(db, mutation.args, version);
+            await createMessage(t, mutation.args, version);
             break;
           default:
             throw new Error(`Unknown mutation: ${mutation.name}`);
@@ -51,7 +51,7 @@ export default async (req, res) => {
         'last_mutation_id to',
         lastMutationID,
       );
-      await db.none(
+      await t.none(
         'UPDATE replicache_client SET last_mutation_id = $2 WHERE id = $1',
         [push.clientID, lastMutationID],
       );
@@ -65,8 +65,8 @@ export default async (req, res) => {
   }
 };
 
-async function getLastMutationID(clientID) {
-  const clientRow = await db.oneOrNone(
+async function getLastMutationID(t, clientID) {
+  const clientRow = await t.oneOrNone(
     'SELECT last_mutation_id FROM replicache_client WHERE id = $1', clientID,
   );
   if (clientRow) {
@@ -74,15 +74,15 @@ async function getLastMutationID(clientID) {
   }
 
   console.log('Creating new client', clientID);
-  await db.none(
+  await t.none(
     'INSERT INTO replicache_client (id, last_mutation_id) VALUES ($1, 0)',
     clientID,
   );
   return 0;
 }
 
-async function createMessage(db, {id, from, content, order}, version) {
-  await db.none(
+async function createMessage(t, {id, from, content, order}, version) {
+  await t.none(
     `INSERT INTO message (
     id, sender, content, ord, version) values 
     ($1, $2, $3, $4, $5)`,
