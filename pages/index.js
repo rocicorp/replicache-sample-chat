@@ -115,7 +115,6 @@ function registerMutators(rep) {
 }
 
 function listen(rep) {
-  return;
   console.log('listening');
   // Listen for pokes, and pull whenever we get one.
   Pusher.logToConsole = true;
