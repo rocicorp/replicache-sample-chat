@@ -45,7 +45,6 @@ function Chat({rep}) {
     const last = messages.length && messages[messages.length - 1][1];
     const order = (last?.order ?? 0) + 1;
     rep.createMessage({
-      // Easy unique ID. In a real app use a GUID.
       id: nanoid(),
       from: usernameRef.current.value,
       content: contentRef.current.value,
