@@ -7,23 +7,10 @@ export default async (req, res) => {
 
   const t0 = Date.now();
   try {
-    await db.tx(async t => {
+    await db.tx(async () => {
       const {nextval: version} = await db.one("SELECT nextval('version')");
-      let lastMutationID = parseInt(
-        (
-          await db.oneOrNone(
-            'SELECT last_mutation_id FROM replicache_client WHERE id = $1',
-            push.clientID,
-          )
-        )?.last_mutation_id ?? '0',
-      );
+      let lastMutationID = await getLastMutationID(push.clientID);
 
-      if (!lastMutationID) {
-        await db.none(
-          'INSERT INTO replicache_client (id, last_mutation_id) VALUES ($1, $2)',
-          [push.clientID, lastMutationID],
-        );
-      }
       console.log('version', version, 'lastMutationID:', lastMutationID);
 
       for (const mutation of push.mutations) {
@@ -77,6 +64,22 @@ export default async (req, res) => {
     console.log('Processed push in', Date.now() - t0);
   }
 };
+
+async function getLastMutationID(clientID) {
+  const clientRow = await db.oneOrNone(
+    'SELECT last_mutation_id FROM replicache_client WHERE id = $1', clientID,
+  );
+  if (clientRow) {
+    return clientRow.last_mutation_id;
+  }
+
+  console.log('Creating new client', clientID);
+  await db.none(
+    'INSERT INTO replicache_client (id, last_mutation_id) VALUES ($1, 0)',
+    clientID,
+  );
+  return 0;
+}
 
 async function createMessage(db, {id, from, content, order}, version) {
   await db.none(
