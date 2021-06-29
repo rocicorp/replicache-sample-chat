@@ -1,4 +1,4 @@
-import {getDB} from '../../db';
+import {db} from '../../db.js';
 import Pusher from 'pusher';
 
 export default async (req, res) => {
@@ -7,7 +7,6 @@ export default async (req, res) => {
 
   const t0 = Date.now();
   try {
-    const db = await getDB();
     await db.tx(async t => {
       const {nextval: version} = await db.one("SELECT nextval('version')");
       let lastMutationID = parseInt(

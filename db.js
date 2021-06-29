@@ -1,10 +1,4 @@
 import pgInit from 'pg-promise';
 
-export async function getDB() {
-  const pgp = pgInit();
-  const db = pgp({
-    connectionString: process.env.REPLICHAT_DB_CONNECTION_STRING,
-  });
-  await db.connect();
-  return db;
-}
+const pgp = pgInit();
+export const db = pgp(process.env.REPLICHAT_DB_CONNECTION_STRING);

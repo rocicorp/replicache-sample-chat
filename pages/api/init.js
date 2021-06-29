@@ -1,7 +1,6 @@
-import {getDB} from '../../db.js';
+import {db} from '../../db.js';
 
 export default async (_, res) => {
-  const db = await getDB();
   await db.task(async t => {
     await t.none('DROP TABLE IF EXISTS message');
     await t.none('DROP TABLE IF EXISTS replicache_client');

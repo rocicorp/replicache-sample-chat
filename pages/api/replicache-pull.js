@@ -1,4 +1,4 @@
-import {getDB} from '../../db';
+import {db} from '../../db.js';
 
 export default async (req, res) => {
   const pull = req.body;
@@ -6,7 +6,6 @@ export default async (req, res) => {
   const t0 = Date.now();
 
   try {
-    const db = await getDB();
     await db.tx(async t => {
       const lastMutationID = parseInt(
         (
