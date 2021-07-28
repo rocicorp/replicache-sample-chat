@@ -30,7 +30,7 @@ function Chat({rep}) {
   const messages = useSubscribe(
     rep,
     async tx => {
-      const list = await tx.scanAll({prefix: 'message/'});
+      const list = await tx.scan({prefix: 'message/'}).entries().toArray();
       list.sort(([, {order: a}], [, {order: b}]) => a - b);
       return list;
     },
