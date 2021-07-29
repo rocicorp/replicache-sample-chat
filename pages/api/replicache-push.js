@@ -67,10 +67,11 @@ export default async (req, res) => {
 
 async function getLastMutationID(t, clientID) {
   const clientRow = await t.oneOrNone(
-    'SELECT last_mutation_id FROM replicache_client WHERE id = $1', clientID,
+    'SELECT last_mutation_id FROM replicache_client WHERE id = $1',
+    clientID,
   );
   if (clientRow) {
-    return clientRow.last_mutation_id;
+    return parseInt(clientRow.last_mutation_id);
   }
 
   console.log('Creating new client', clientID);
