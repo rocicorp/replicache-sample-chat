@@ -16,7 +16,7 @@ export default async (req, res) => {
         )?.last_mutation_id ?? '0',
       );
       const changed = await t.manyOrNone(
-        'select id, sender, content, ord from message where version > $1',
+        'select id, sender, content, ord, attachment from message where version > $1',
         parseInt(pull.cookie ?? 0),
       );
       const cookie = (
@@ -24,18 +24,41 @@ export default async (req, res) => {
       ).version;
       console.log({cookie, lastMutationID, changed});
 
-      res.json({
-        lastMutationID,
-        cookie,
-        patch: changed.map(row => ({
+      const attachments = [];
+      const patch = changed.map(row => {
+        if (row.attachment) {
+          attachments.push(row.attachment);
+        }
+        return {
           op: 'put',
           key: `message/${row.id}`,
           value: {
             from: row.sender,
             content: row.content,
             order: parseInt(row.ord),
+            attachment: row.attachment,
           },
-        })),
+        };
+      });
+
+      for (const attachment of attachments) {
+        const res = await t.oneOrNone(
+          `SELECT 1 as present FROM blob WHERE hash = $1`,
+          attachment,
+        );
+        if (res) {
+          patch.push({
+            op: 'put',
+            key: `blob/${attachment}`,
+            value: {uploaded: true},
+          });
+        }
+      }
+
+      res.json({
+        lastMutationID,
+        cookie,
+        patch,
       });
       res.end();
     });

@@ -31,9 +31,13 @@ export default async (req, res) => {
 
         console.log('Processing mutation:', JSON.stringify(mutation, null, ''));
 
-        switch (mutation.name) {
+        const {name, args} = mutation;
+        switch (name) {
           case 'createMessage':
-            await createMessage(t, mutation.args, version);
+            await createMessage(t, args, version);
+            break;
+          case 'addBlob':
+            await addBlob(t, args, version);
             break;
           default:
             throw new Error(`Unknown mutation: ${mutation.name}`);
@@ -82,13 +86,21 @@ async function getLastMutationID(t, clientID) {
   return 0;
 }
 
-async function createMessage(t, {id, from, content, order}, version) {
+async function createMessage(
+  t,
+  {id, from, content, order, attachment},
+  version,
+) {
   await t.none(
     `INSERT INTO message (
-    id, sender, content, ord, version) values 
-    ($1, $2, $3, $4, $5)`,
-    [id, from, content, order, version],
+    id, sender, content, ord, version, attachment) values 
+    ($1, $2, $3, $4, $5, $6)`,
+    [id, from, content, order, version, attachment],
   );
+}
+
+async function addBlob(t, {hash, uploaded}, version) {
+  // This is intentionally a no-op. it is only used on the client.
 }
 
 async function sendPoke() {
