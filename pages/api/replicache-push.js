@@ -43,8 +43,6 @@ export default async (req, res) => {
         console.log('Processed mutation in', Date.now() - t1);
       }
 
-      await sendPoke();
-
       console.log(
         'setting',
         push.clientID,
@@ -57,6 +55,8 @@ export default async (req, res) => {
       );
       res.send('ok');
     });
+
+    await sendPoke();
   } catch (e) {
     console.error(e);
     res.status(500).send(e.toString());
