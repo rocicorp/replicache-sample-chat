@@ -104,13 +104,12 @@ function registerMutators(rep) {
   // TODO: https://github.com/rocicorp/replicache/issues/329
   rep.createMessage = rep.register(
     'createMessage',
-    (tx, {id, from, content, order}) => {
+    (tx, {id, from, content, order}) =>
       tx.put(`message/${id}`, {
         from,
         content,
         order,
-      });
-    },
+      }),
   );
 }
 
