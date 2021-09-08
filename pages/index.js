@@ -15,10 +15,16 @@ export default function Home() {
       // symbols and additional debugging info. The .wasm version is smaller
       // and faster.
       wasmModule: '/replicache.dev.wasm',
+      mutators: {
+        createMessage: async (tx, {id, from, content, order}) => {
+          await tx.put(`message/${id}`, {
+            from,
+            content,
+            order,
+          });
+        },
+      },
     });
-    registerMutators(rep);
-    // TODO: https://github.com/rocicorp/replicache/issues/328
-    rep.pull();
     listen(rep);
     setRep(rep);
   }, []);
@@ -101,19 +107,6 @@ const styles = {
     margin: '0 1em',
   },
 };
-
-function registerMutators(rep) {
-  // TODO: https://github.com/rocicorp/replicache/issues/329
-  rep.createMessage = rep.register(
-    'createMessage',
-    (tx, {id, from, content, order}) =>
-      tx.put(`message/${id}`, {
-        from,
-        content,
-        order,
-      }),
-  );
-}
 
 function listen(rep) {
   console.log('listening');
