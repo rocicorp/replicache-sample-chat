@@ -56,6 +56,8 @@ export default async (req, res) => {
       res.send('ok');
     });
 
+    // We need to await here otherwise, Next.js will frequently kill the request
+    // and the poke won't get sent.
     await sendPoke();
   } catch (e) {
     console.error(e);
