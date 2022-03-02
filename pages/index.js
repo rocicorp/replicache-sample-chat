@@ -11,6 +11,7 @@ export default function Home() {
     const rep = new Replicache({
       pushURL: '/api/replicache-push',
       pullURL: '/api/replicache-pull',
+      name: 'anon',
       mutators: {
         createMessage: async (tx, {id, from, content, order}) => {
           await tx.put(`message/${id}`, {
